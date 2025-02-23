@@ -13,7 +13,7 @@ class NavigationService {
     );
   }
 
-  navigateReplave(Widget widget) {
+  navigateReplace(Widget widget) {
     return navigatorKey.currentState?.pushReplacement(
       MaterialPageRoute(
         builder: (context) => widget,
@@ -32,12 +32,12 @@ class NavigationService {
     );
   }
 
-  void showSnackbar() {
+  void showSnackbar(String message) {
     final context = navigatorKey.currentContext!;
     ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
     final snackBarWidget = SnackBar(
         content: Text(
-      'Hello World! - Movies App',
+      message,
       style: TextStyle(
         color: Colors.white,
       ),
