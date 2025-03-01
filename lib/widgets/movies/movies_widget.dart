@@ -6,13 +6,18 @@ import 'package:mvvm_architecture_in_flutter/services/init_getit.dart';
 import 'package:mvvm_architecture_in_flutter/services/navigation_service.dart';
 import 'package:mvvm_architecture_in_flutter/widgets/movies/favorite_button.dart';
 import 'package:mvvm_architecture_in_flutter/widgets/movies/genres_list_widget.dart';
+import 'package:provider/provider.dart';
 import '../cached_image.dart';
 
 class MoviesWidget extends StatelessWidget {
-  const MoviesWidget({super.key, required this.moviesModel});
-  final MoviesModel moviesModel;
+  const MoviesWidget({
+    super.key,
+    //required this.moviesModel,
+  });
+  //final MoviesModel moviesModel;
   @override
   Widget build(BuildContext context) {
+    final moviesModelProvider = Provider.of<MoviesModel>(context);
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Material(
@@ -22,7 +27,10 @@ class MoviesWidget extends StatelessWidget {
           borderRadius: BorderRadius.circular(12.0),
           onTap: () {
             getIt<NavigationService>().navigate(
-              MovieDetailsScreen(moviesModel: moviesModel),
+              ChangeNotifierProvider.value(
+                value: moviesModelProvider,
+                child: MovieDetailsScreen(),
+              ),
             );
           },
           child: Padding(
@@ -35,10 +43,10 @@ class MoviesWidget extends StatelessWidget {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(12.0),
                     child: Hero(
-                      tag: moviesModel.id,
+                      tag: moviesModelProvider.id,
                       child: CachedImageWidget(
                         imgUrl:
-                            'https://image.tmdb.org/t/p/w500/${moviesModel.backdropPath}',
+                            'https://image.tmdb.org/t/p/w500/${moviesModelProvider.backdropPath}',
                       ),
                     ),
                   ),
@@ -48,7 +56,7 @@ class MoviesWidget extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          moviesModel.originalTitle,
+                          moviesModelProvider.originalTitle,
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -64,11 +72,14 @@ class MoviesWidget extends StatelessWidget {
                             ),
                             SizedBox(width: 5),
                             Text(
-                                "${moviesModel.voteAverage.toStringAsFixed(1)}/10"),
+                              "${moviesModelProvider.voteAverage.toStringAsFixed(1)}/10",
+                            ),
                           ],
                         ),
                         const SizedBox(height: 10),
-                        GenreListWidget(moviesModel: moviesModel),
+                        GenreListWidget(
+                          moviesModel: moviesModelProvider,
+                        ),
                         Row(
                           mainAxisSize: MainAxisSize.max,
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -80,11 +91,13 @@ class MoviesWidget extends StatelessWidget {
                             ),
                             const SizedBox(width: 5),
                             Text(
-                              moviesModel.releaseDate,
+                              moviesModelProvider.releaseDate,
                               style: TextStyle(color: Colors.grey),
                             ),
                             const Spacer(),
-                            FavoriteButtonWidget(moviesModel: moviesModel),
+                            FavoriteButtonWidget(
+                              moviesModel: moviesModelProvider,
+                            ),
                           ],
                         ),
                       ],

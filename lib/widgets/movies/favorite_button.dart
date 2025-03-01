@@ -1,35 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:mvvm_architecture_in_flutter/constants/my_app_icons.dart';
 import 'package:mvvm_architecture_in_flutter/models/movies_model.dart';
+import 'package:mvvm_architecture_in_flutter/view_medels/favorites_provider.dart';
+import 'package:provider/provider.dart';
 
-class FavoriteButtonWidget extends StatefulWidget {
+class FavoriteButtonWidget extends StatelessWidget {
   const FavoriteButtonWidget({super.key, required this.moviesModel});
   final MoviesModel moviesModel;
 
   @override
-  State<FavoriteButtonWidget> createState() => _FavoriteButtonWidgetState();
-}
-
-class _FavoriteButtonWidgetState extends State<FavoriteButtonWidget> {
-  final favoriteMoviesIds = [];
-  @override
   Widget build(BuildContext context) {
-    bool isFavorite = favoriteMoviesIds.contains(widget.moviesModel.id);
-    return IconButton(
-      onPressed: () {
-        if (isFavorite) {
-          favoriteMoviesIds.remove(widget.moviesModel.id);
-        } else {
-          favoriteMoviesIds.add(widget.moviesModel.id);
-        }
-        setState(() {});
-      },
-      icon: Icon(
-        isFavorite ? MyAppIcons.favorite : MyAppIcons.facoriteOutlineRounded,
-        color: isFavorite ? Colors.red : null,
-        //color: Colors.red,
-        size: 20,
-      ),
-    );
+    return Consumer<FavoritesProvider>(
+        builder: (context, favoriteProvider, child) {
+      return IconButton(
+        onPressed: () {
+          favoriteProvider.addOrRemoveFromFavorites(moviesModel);
+        },
+        icon: Icon(
+          favoriteProvider.isFavorites(moviesModel)
+              ? MyAppIcons.favorite
+              : MyAppIcons.facoriteOutlineRounded,
+          color: favoriteProvider.isFavorites(moviesModel)
+              ? Colors.red
+              : null, // isFavorite ? Colors.red : null,
+          //color: Colors.red,
+          size: 20,
+        ),
+      );
+    });
   }
 }

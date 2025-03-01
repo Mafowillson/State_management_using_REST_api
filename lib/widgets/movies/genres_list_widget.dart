@@ -4,13 +4,16 @@ import 'package:mvvm_architecture_in_flutter/models/movies_model.dart';
 import 'package:mvvm_architecture_in_flutter/utils/genre_utils.dart';
 
 class GenreListWidget extends StatelessWidget {
-  const GenreListWidget({super.key, required this.moviesModel});
+  const GenreListWidget({
+    super.key,
+    required this.moviesModel,
+  });
   final MoviesModel moviesModel;
 
   @override
   Widget build(BuildContext context) {
     List<MoviesGenres> moviesGenre =
-        GenreUtils.movieGenresNames(moviesModel.genreIds);
+        GenreUtils.movieGenresNames(moviesModel.genreIds, context);
     return Wrap(
       children: List.generate(
         moviesGenre.length,
