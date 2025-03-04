@@ -13,7 +13,7 @@ class NavigationService {
     );
   }
 
-  navigateReplave(Widget widget) {
+  navigateReplace(Widget widget) {
     return navigatorKey.currentState?.pushReplacement(
       MaterialPageRoute(
         builder: (context) => widget,

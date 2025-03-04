@@ -14,9 +14,9 @@ class MyThemData {
       colorScheme: ColorScheme.dark(
           // surface: Color.fromARGB(26, 13, 184, 247),
           ),
-      appBarTheme: const AppBarTheme(
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+      appBarTheme: AppBarTheme(
+        backgroundColor: Colors.grey.shade800,
+        foregroundColor: Colors.white,
         elevation: 1,
       ));
 }

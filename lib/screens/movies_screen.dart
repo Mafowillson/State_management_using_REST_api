@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mvvm_architecture_in_flutter/constants/my_app_icons.dart';
-import 'package:mvvm_architecture_in_flutter/models/movies_genres.dart';
-import 'package:mvvm_architecture_in_flutter/repository/movies_repo.dart';
+import 'package:mvvm_architecture_in_flutter/enums/theme_enums.dart';
 import 'package:mvvm_architecture_in_flutter/screens/favorites_screen.dart';
 import 'package:mvvm_architecture_in_flutter/services/init_getit.dart';
 import 'package:mvvm_architecture_in_flutter/services/navigation_service.dart';
+import 'package:mvvm_architecture_in_flutter/view_models/movies/movies_provider.dart';
 import 'package:mvvm_architecture_in_flutter/widgets/movies/movies_widget.dart';
-import 'dart:developer' as devtool;
+
+import '../view_models/theme_provider.dart';
 
 class MoviesScreen extends StatelessWidget {
   const MoviesScreen({super.key});
@@ -30,32 +32,50 @@ class MoviesScreen extends StatelessWidget {
               color: Colors.red,
             ),
           ),
-          IconButton(
-            onPressed: () async {
-              // List<MoviesModel> movies =
-              //     await getIt<ApiService>().fetchMovies();
-              // devtool.log('movies $movies');
-
-              List<MoviesGenres> movies =
-                  //await getIt<ApiService>().fetchGenres();
-                  await getIt<MoviesRepository>().fetchGenres();
-              devtool.log('Genres $movies');
-            },
-            icon: const Icon(
-              MyAppIcons.darkMode,
-            ),
-          ),
+          Consumer(builder: (context, ref, child) {
+            final themeState = ref.watch(themeProvider);
+            return IconButton(
+              onPressed: () async {
+                await ref.read(themeProvider.notifier).toggleTheme();
+              },
+              icon: Icon(
+                themeState == ThemeEnums.dark
+                    ? MyAppIcons.darkMode
+                    : MyAppIcons.lightMode,
+              ),
+            );
+          }),
         ],
       ),
-      body: ListView.builder(
-        itemCount: 10,
-        itemBuilder: (context, index) {
-          return Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: MoviesWidget(),
+      body: Consumer(builder: (context, WidgetRef ref, child) {
+        final moviesState = ref.watch(moviesProvider);
+        if (moviesState.isLoading && moviesState.moviesList.isEmpty) {
+          return const Center(child: CircularProgressIndicator.adaptive());
+        } else if (moviesState.fetchMoviesError.isNotEmpty) {
+          return Center(
+            child: Text(moviesState.fetchMoviesError),
           );
-        },
-      ),
+        }
+        return NotificationListener<ScrollNotification>(
+          onNotification: (scrollInfo) {
+            if (scrollInfo.metrics.pixels ==
+                    scrollInfo.metrics.maxScrollExtent &&
+                !moviesState.isLoading) {
+              ref.read(moviesProvider.notifier).getMovies();
+              return true;
+            }
+            return false;
+          },
+          child: ListView.builder(
+            itemCount: moviesState.moviesList.length,
+            itemBuilder: (context, index) {
+              return MoviesWidget(
+                moviesModel: moviesState.moviesList[index],
+              );
+            },
+          ),
+        );
+      }),
     );
   }
 }
