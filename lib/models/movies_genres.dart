@@ -1,11 +1,16 @@
-class MoviesGenres {
+import 'package:equatable/equatable.dart';
+
+class MoviesGenres extends Equatable {
   final int id;
   final String name;
 
-  MoviesGenres({
+  const MoviesGenres({
     required this.id,
     required this.name,
   });
+
+  @override
+  List<Object> get props => [id, name];
 
   factory MoviesGenres.fromJson(Map<String, dynamic> json) {
     return MoviesGenres(

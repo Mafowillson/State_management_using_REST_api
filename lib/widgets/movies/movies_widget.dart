@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mvvm_architecture_in_flutter/constants/my_app_constants.dart';
 import 'package:mvvm_architecture_in_flutter/constants/my_app_icons.dart';
+import 'package:mvvm_architecture_in_flutter/models/movies_model.dart';
 import 'package:mvvm_architecture_in_flutter/screens/movie_details.dart';
 import 'package:mvvm_architecture_in_flutter/services/init_getit.dart';
 import 'package:mvvm_architecture_in_flutter/services/navigation_service.dart';
@@ -9,7 +9,11 @@ import 'package:mvvm_architecture_in_flutter/widgets/movies/genres_list_widget.d
 import '../cached_image.dart';
 
 class MoviesWidget extends StatelessWidget {
-  const MoviesWidget({super.key});
+  final MoviesModel moviesModel;
+  const MoviesWidget({
+    super.key,
+    required this.moviesModel,
+  });
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -21,7 +25,7 @@ class MoviesWidget extends StatelessWidget {
           borderRadius: BorderRadius.circular(12.0),
           onTap: () {
             getIt<NavigationService>().navigate(
-              MovieDetailsScreen(),
+              MovieDetailsScreen(moviesModel: moviesModel),
             );
           },
           child: Padding(
@@ -33,8 +37,9 @@ class MoviesWidget extends StatelessWidget {
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(12.0),
-                    child: const CachedImageWidget(
-                      imgUrl: MyAppConstants.movieImage,
+                    child: CachedImageWidget(
+                      imgUrl:
+                          'https://image.tmdb.org/t/p/w500/${moviesModel.backdropPath}',
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -42,15 +47,15 @@ class MoviesWidget extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          "Movie Title",
+                        Text(
+                          moviesModel.originalTitle,
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         const SizedBox(height: 10),
-                        const Row(
+                        Row(
                           children: [
                             Icon(
                               MyAppIcons.star,
@@ -58,11 +63,12 @@ class MoviesWidget extends StatelessWidget {
                               size: 20,
                             ),
                             SizedBox(width: 5),
-                            Text("8/10"),
+                            Text(
+                                "${moviesModel.voteAverage.toStringAsFixed(1)}/10"),
                           ],
                         ),
                         const SizedBox(height: 10),
-                        GenreListWidget(),
+                        GenreListWidget(moviesModel: moviesModel),
                         Row(
                           mainAxisSize: MainAxisSize.max,
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -73,12 +79,12 @@ class MoviesWidget extends StatelessWidget {
                               color: Theme.of(context).colorScheme.secondary,
                             ),
                             const SizedBox(width: 5),
-                            const Text(
-                              "Release Date",
+                            Text(
+                              moviesModel.releaseDate,
                               style: TextStyle(color: Colors.grey),
                             ),
                             const Spacer(),
-                            FavoriteButtonWidget(),
+                            FavoriteButtonWidget(moviesModel: moviesModel),
                           ],
                         ),
                       ],
